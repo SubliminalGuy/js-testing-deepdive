@@ -1,12 +1,4 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  beforeAll,
-  afterEach,
-  afterAll,
-} from 'vitest';
+import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
 
 import {
   getCoupons,
@@ -147,7 +139,7 @@ describe('canDrive', () => {
 describe('fetchData', () => {
   it('should return a promise that will resolve to an array of numbers', async () => {
     try {
-      const result = await fetchData();
+      await fetchData();
     } catch (err) {
       expect(err).toHaveProperty('reason');
       expect(err.reason).toMatch(/network/i);

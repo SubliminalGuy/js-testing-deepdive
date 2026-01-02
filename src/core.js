@@ -1,5 +1,3 @@
-import { experimental_getRunnerTask } from 'vitest/node';
-
 // Exercise: Writing good assertions
 export function getCoupons() {
   return [
@@ -79,12 +77,6 @@ export function canDrive(age, countryCode) {
 // Lesson: Testing asynchronous code
 export function fetchData() {
   return Promise.reject({ reason: 'Network error' });
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const data = [1, 2, 3];
-      resolve(data);
-    });
-  });
 }
 
 // Lesson: Setup and teardown
