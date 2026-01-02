@@ -1,16 +1,19 @@
-import { vi, it, expect, describe } from "vitest";
+import { vi, it, expect, describe, beforeEach } from "vitest";
 import {
   getPriceInCurrency,
   getShippingInfo,
   renderPage,
   submitOrder,
   signUp,
+  login,
+  isOnline,
 } from "../src/mocking";
 import { getExchangeRate } from "../src/libs/currency";
 import { getShippingQuote } from "../src/libs/shipping";
 import { trackPageView } from "../src/libs/analytics";
 import { charge } from "../src/libs/payment";
 import { isValidEmail, sendEmail } from "../src/libs/email";
+import security from "../src/libs/security";
 
 vi.mock("../src/libs/currency");
 vi.mock("../src/libs/shipping");
@@ -125,9 +128,36 @@ describe("signUp", () => {
     const email = "info@nitewalkz.net";
     const result = await signUp(email);
 
-    expect(sendEmail).toHaveBeenCalled();
+    expect(sendEmail).toHaveBeenCalledOnce();
     const args = vi.mocked(sendEmail).mock.calls[0];
     expect(args[0]).toBe(email);
     expect(args[1]).toMatch(/welcome/i);
+  });
+});
+
+describe("login", () => {
+  it("should email the one-time login code", async () => {
+    const email = "david@domain.com";
+    const spy = vi.spyOn(security, "generateCode");
+
+    await login(email);
+
+    const securityCode = spy.mock.results[0].value.toString();
+    expect(sendEmail).toHaveBeenCalledWith(email, securityCode);
+  });
+});
+
+describe("isOnline", () => {
+  it("should return false if current hour is outside opening hours", async () => {
+    vi.setSystemTime("2026-01-02 07:59");
+    expect(isOnline()).toBe(false);
+
+    vi.setSystemTime("2026-01-02 20:01");
+    expect(isOnline()).toBe(false);
+  });
+
+  it("should return true if current hour is within opening hours", async () => {
+    vi.setSystemTime("2026-01-02 08:00");
+    expect(isOnline()).toBe(true);
   });
 });
